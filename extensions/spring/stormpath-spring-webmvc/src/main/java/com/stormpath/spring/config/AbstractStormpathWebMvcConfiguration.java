@@ -997,10 +997,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
      * @return {@code true} if the specified message source is just a placeholder (and not relevant for our needs) or
      * {@code false} if the message source is a 'real' message source and usable.
      */
-    //
     protected boolean isPlaceholder(MessageSource messageSource) {
-        return messageSource instanceof DelegatingMessageSource &&
-                ((DelegatingMessageSource) messageSource).getParentMessageSource() == null;
+        if (messageSource instanceof DelegatingMessageSource) {
+            DelegatingMessageSource src = (DelegatingMessageSource)messageSource;
+            MessageSource parent = src.getParentMessageSource();
+            return parent == null || isPlaceholder(parent);
+        }
+        return false;
     }
 
     protected MessageSource createI18nPropertiesMessageSource() {
