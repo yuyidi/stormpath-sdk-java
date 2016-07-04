@@ -103,6 +103,7 @@ import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
@@ -278,7 +279,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.head.fragmentSelector'] ?: 'head' }")
     protected String headFragmentSelector;
 
-    @Value("#{ @environment['stormpath.web.head.cssUris'] ?: '//fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800 //netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css /assets/css/stormpath.css' }")
+    @Value("#{ @environment['stormpath.web.head.cssUris'] ?: '//fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800 //netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css /assets/css/stormpath.css' }")
     protected String headCssUris;
 
     @Value("#{ @environment['stormpath.web.head.extraCssUris'] }")
@@ -331,8 +332,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.idSite.showOrganizationField'] }")
     protected Boolean idSiteShowOrganizationField;
 
-    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: false }")
-    protected boolean samlEnabled;
+    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: true }")
+    protected boolean callbackEnabled;
 
     @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/samlResult' }")
     protected String samlResultUri;
@@ -418,6 +419,22 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Autowired
     protected Environment environment;
 
+    @Autowired(required = false)
+    @Qualifier("loginPreHandler")
+    protected WebHandler loginPreHandler;
+
+    @Autowired(required = false)
+    @Qualifier("loginPostHandler")
+    protected WebHandler loginPostHandler;
+
+    @Autowired(required = false)
+    @Qualifier("registerPreHandler")
+    protected WebHandler registerPreHandler;
+
+    @Autowired(required = false)
+    @Qualifier("registerPostHandler")
+    protected WebHandler registerPostHandler;
+
     public HandlerMapping stormpathHandlerMapping() throws Exception {
 
         Map<String, Controller> mappings = new LinkedHashMap<String, Controller>();
@@ -451,7 +468,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (idSiteEnabled) {
             mappings.put(idSiteResultUri, stormpathIdSiteResultController());
         }
-        if (samlEnabled) {
+        if (callbackEnabled) {
             mappings.put("/saml", stormpathSamlController());
             mappings.put(samlResultUri, stormpathSamlResultController());
         }
@@ -1242,7 +1259,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             controller = c;
         }
 
-        if (samlEnabled) {
+        if (callbackEnabled) {
             SamlLogoutController c = new SamlLogoutController(stormpathInternalConfig().getLogoutControllerConfig(), stormpathInternalConfig().getProducesMediaTypes());
             c.setServerUriResolver(stormpathServerUriResolver());
             c.setSamlResultUri(samlResultUri);
@@ -1267,6 +1284,26 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         final Resolver<Locale> localeResolver = stormpathLocaleResolver();
 
         return new Config() {
+            @Override
+            public WebHandler getLoginPreHandler() {
+                return loginPreHandler;
+            }
+
+            @Override
+            public WebHandler getLoginPostHandler() {
+                return loginPostHandler;
+            }
+
+            @Override
+            public WebHandler getRegisterPreHandler() {
+                return registerPreHandler;
+            }
+
+            @Override
+            public WebHandler getRegisterPostHandler() {
+                return registerPostHandler;
+            }
+
             @Override
             public ControllerConfigResolver getLoginControllerConfig() {
                 return stormpathLoginControllerConfigResolver();
@@ -1354,7 +1391,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
             @Override
             public boolean isSamlLoginEnabled() {
-                return samlEnabled;
+                return callbackEnabled;
             }
 
             @Override
@@ -1389,6 +1426,21 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             @Override
             public String getProducesMediaTypes() {
                 return produces;
+            }
+
+            @Override
+            public boolean isOAuthEnabled() {
+                return accessTokenEnabled;
+            }
+
+            @Override
+            public boolean isIdSiteEnabled() {
+                return idSiteEnabled;
+            }
+
+            @Override
+            public boolean isCallbackEnabled() {
+                return callbackEnabled;
             }
 
             @Override
