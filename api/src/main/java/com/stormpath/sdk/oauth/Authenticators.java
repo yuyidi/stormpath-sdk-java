@@ -31,30 +31,30 @@ import com.stormpath.sdk.lang.Classes;
  * The benefit of using Stormpath to validate the token through the REST API is that Stormpath can validate the token against the state of your application
  * and account. To illustrate the difference:
  * <table summary="JWT validation">
- * <tr>
- * <td>Validation Criteria</td><td>Locally</td><td>Stormpath</td>
- * <tr/>
- * <tr>
- * <td>Token hasn’t been tampered with</td><td>yes</td><td>yes</td>
- * </tr>
- * <tr>
- * <td>Token hasn’t expired</td><td>yes</td><td>yes</td>
- * </tr>
- * <tr>
- * <td>Token hasn’t been revoked</td><td>no</td><td>yes</td>
- * </tr>
- * <tr>
- * <td>Account hasn’t been disabled, and hasn’t been deleted</td><td>no</td><td>yes</td>
- * </tr>
- * <tr>
- * <td>Issuer is Stormpath</td><td>yes</td><td>yes</td>
- * </tr>
- * <tr>
- * <td>Issuing application is still enabled, and hasn’t been deleted</td><td>no</td><td>yes</td>
- * </tr>
- * <tr>
- * <td>Account is still in an account store for the issuing application</td><td>no</td><td>yes</td>
- * </tr>
+ *   <tr>
+ *      <td>Validation Criteria</td><td>Locally</td><td>Stormpath</td>
+ *   <tr/>
+ *   <tr>
+ *      <td>Token hasnt been tampered with</td><td>yes</td><td>yes</td>
+ *   </tr>
+ *   <tr>
+ *      <td>Token hasnt expired</td><td>yes</td><td>yes</td>
+ *   </tr>
+ *   <tr>
+ *      <td>Token hasnt been revoked</td><td>no</td><td>yes</td>
+ *   </tr>
+ *   <tr>
+ *      <td>Account hasnt been disabled, and hasnt been deleted</td><td>no</td><td>yes</td>
+ *   </tr>
+ *   <tr>
+ *      <td>Issuer is Stormpath</td><td>yes</td><td>yes</td>
+ *   </tr>
+ *   <tr>
+ *      <td>Issuing application is still enabled, and hasnt been deleted</td><td>no</td><td>yes</td>
+ *   </tr>
+ *   <tr>
+ *      <td>Account is still in an account store for the issuing application</td><td>no</td><td>yes</td>
+ *   </tr>
  * </table>
  * <h2>Using Stormpath to Validate Tokens</h2>
  * <pre>

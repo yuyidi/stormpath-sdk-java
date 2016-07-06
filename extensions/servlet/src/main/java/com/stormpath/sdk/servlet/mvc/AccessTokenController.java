@@ -15,25 +15,26 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.authc.DefaultBasicApiAuthenticationRequest;
 import com.stormpath.sdk.impl.authc.DefaultHttpServletRequestWrapper;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthentication;
-import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.oauth.Authenticators;
+import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
-import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
@@ -43,17 +44,15 @@ import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.http.authc.*;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.stormpath.sdk.servlet.http.authc.AuthorizationHeaderParser;
+import com.stormpath.sdk.servlet.http.authc.DefaultAuthorizationHeaderParser;
+import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationException;
+import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
-import java.util.Date;
 
 /**
  * @since 1.0.RC4
