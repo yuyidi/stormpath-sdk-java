@@ -153,31 +153,44 @@ class DefaultAccessTokenTest {
         def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
 
         // An sst claim of 'refresh' means it's not a valid access token
-        String jwt = Jwts.builder()
-            .setHeaderParam("stt", "refresh")
-            .setSubject(href)
-            .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
-            .compact();
-
-        def properties = [
-            href: href,
-            jwt: jwt
+        def invalidJwts = [
+                Jwts.builder()
+                        .setHeaderParam("stt", "refresh")
+                        .setSubject(href)
+                        .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+                        .compact(),
+                Jwts.builder()
+                        .setHeaderParam("stt", "xxxx")
+                        .setSubject(href)
+                        .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+                        .compact(),
+                Jwts.builder()
+                        .setSubject(href)
+                        .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+                        .compact()
         ]
 
-        def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        invalidJwts.each { jwt ->
+            def properties = [
+                    href: href,
+                    jwt : jwt
+            ]
 
-        expect(apiKey.getSecret()).andReturn(secret)
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+            def internalDataStore = createStrictMock(InternalDataStore)
+            def apiKey = createStrictMock(ApiKey)
 
-        replay internalDataStore, apiKey
+            expect(apiKey.getSecret()).andReturn(secret)
+            expect(internalDataStore.getApiKey()).andReturn(apiKey)
 
-        try {
-            new DefaultAccessToken(internalDataStore, properties)
-            fail("should have thrown")
-        } catch (Exception e) {
-            def message = e.getMessage()
-            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+            replay internalDataStore, apiKey
+
+            try {
+                new DefaultAccessToken(internalDataStore, properties)
+                fail("should have thrown")
+            } catch (Exception e) {
+                def message = e.getMessage()
+                assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+            }
         }
     }
 
