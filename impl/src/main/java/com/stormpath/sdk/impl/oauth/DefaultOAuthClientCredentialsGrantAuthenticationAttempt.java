@@ -16,7 +16,7 @@ public class DefaultOAuthClientCredentialsGrantAuthenticationAttempt extends Abs
     static final StringProperty API_KEY_ID = new StringProperty("apiKeyId");
     static final StringProperty API_KEY_SECRET = new StringProperty("apiKeySecret");
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(GRANT_TYPE);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(GRANT_TYPE, API_KEY_ID, API_KEY_SECRET);
 
     public DefaultOAuthClientCredentialsGrantAuthenticationAttempt(InternalDataStore dataStore) {
         super(dataStore);
