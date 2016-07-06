@@ -154,10 +154,9 @@ class DefaultAccessTokenTest {
 
         // An sst claim of 'refresh' means it's not a valid access token
         String jwt = Jwts.builder()
-                .setHeaderParam("stt", "refresh")
+            .setHeaderParam("stt", "refresh")
             .setSubject(href)
-
-                .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+            .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
             .compact();
 
         def properties = [
